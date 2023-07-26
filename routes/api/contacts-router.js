@@ -12,17 +12,21 @@ const contactsRouter = express.Router();
 //--GET All
 contactsRouter.get("/", contactsController.getAll);
 
-//--GET by ID
-contactsRouter.get("/:id", contactsController.getById);
+// //--GET by ID
+// contactsRouter.get("/:id", contactsController.getById);
 
-//--POST conntact
-contactsRouter.post("/", isEmptyBody, validateBody(contactsSchemas.contactsAddSchema), contactsController.add
+// //--POST conntact
+contactsRouter.post(
+  "/",
+  isEmptyBody,
+  validateBody(contactsSchemas.contactsAddSchema),
+  contactsController.add
 );
 
-//--Put by ID (update)
-contactsRouter.put("/:id", isEmptyBody, validateBody(contactsSchemas.contactsAddSchema), contactsController.updateById);
+// //--Put by ID (update)
+// contactsRouter.put("/:id", isEmptyBody, validateBody(contactsSchemas.contactsAddSchema), contactsController.updateById);
 
-//--delete (remote contact by ID)
-contactsRouter.delete("/:id", contactsController.deleteById);
+// //--delete (remote contact by ID)
+// contactsRouter.delete("/:id", contactsController.deleteById);
 
 export default contactsRouter;
