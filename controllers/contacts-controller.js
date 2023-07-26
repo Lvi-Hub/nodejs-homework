@@ -4,19 +4,19 @@ import { ctrlWrapper } from "../decorators/index.js";
 
 //--GET All
 const getAll = async (req, res) => {
-  const result = await Contact.find();
+  const result = await Contact.find({}, "-createdAt -updatedAt");
   res.json(result);
 };
 
 // //--GET by ID
-// const getById = async (req, res) => {
-//   const { id } = req.params;
-//   const result = await contactsService.getContactById(id);
-//   if (!result) {
-//     throw HttpError(404, `Contact with id=${id} not found`);
-//   }
-//   res.json(result);
-// };
+const getById = async (req, res) => {
+  const { id } = req.params;
+  const result = await Contact.findById(id);
+  if (!result) {
+    throw HttpError(404, `Contact with id=${id} not found`);
+  }
+  res.json(result);
+};
 
 // //--POST conntact
 const add = async (req, res) => {
@@ -50,7 +50,7 @@ const add = async (req, res) => {
 
 export default {
   getAll: ctrlWrapper(getAll),
-  // getById: ctrlWrapper(getById),
+  getById: ctrlWrapper(getById),
   add: ctrlWrapper(add),
   // updateById: ctrlWrapper(updateById),
   // deleteById: ctrlWrapper(deleteById),
