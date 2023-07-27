@@ -23,8 +23,14 @@ contactsRouter.post(
   contactsController.add
 );
 
-// //--Put by ID (update)
-// contactsRouter.put("/:id", isValidId, isEmptyBody, validateBody(contactsSchemas.contactsAddSchema), contactsController.updateById);
+//--Put by ID (update)
+contactsRouter.put(
+  "/:id",
+  isValidId,
+  isEmptyBody,
+  validateBody(contactsSchemas.contactsAddSchema),
+  contactsController.updateById
+);
 
 // //--delete (remote contact by ID)
 // contactsRouter.delete("/:id", isValidId, contactsController.deleteById);

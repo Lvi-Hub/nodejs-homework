@@ -25,14 +25,14 @@ const add = async (req, res) => {
 };
 
 // //--Put by ID (update)
-// const updateById = async (req, res) => {
-//   const { id } = req.params;
-//   const result = await contactsService.updateContactById(id, req.body);
-//   if (!result) {
-//     throw HttpError(404, `Contact with id=${id} not found`);
-//   }
-//   res.json(result);
-// };
+const updateById = async (req, res) => {
+  const { id } = req.params;
+  const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
+  if (!result) {
+    throw HttpError(404, `Contact with id=${id} not found`);
+  }
+  res.json(result);
+};
 
 //--delete (remote contact by ID)
 // const deleteById = async (req, res) => {
@@ -52,6 +52,6 @@ export default {
   getAll: ctrlWrapper(getAll),
   getById: ctrlWrapper(getById),
   add: ctrlWrapper(add),
-  // updateById: ctrlWrapper(updateById),
+  updateById: ctrlWrapper(updateById),
   // deleteById: ctrlWrapper(deleteById),
 };
