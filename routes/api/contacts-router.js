@@ -32,7 +32,16 @@ contactsRouter.put(
   contactsController.updateById
 );
 
+//--PATCH by ID (update)
+contactsRouter.patch(
+  "/:id/favorite",
+  isValidId,
+  isEmptyBody,
+  validateBody(contactsSchemas.contactUpdateFavoriteSchema),
+  contactsController.updateFavorite
+);
+
 // //--delete (remote contact by ID)
-// contactsRouter.delete("/:id", isValidId, contactsController.deleteById);
+contactsRouter.delete("/:id", isValidId, contactsController.deleteById);
 
 export default contactsRouter;
