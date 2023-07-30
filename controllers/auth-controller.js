@@ -1,14 +1,49 @@
-import User from "../models/user.js";
+import bcrypt from "bcryptjs";
 
-import { HttpError } from "../helpers/index.js";
+import User from "../models/user.js";
 
 import { ctrlWrapper } from "../decorators/index.js";
 
+import { HttpError } from "../helpers/index.js";
 
-const singup = async (req, res) => {
-    
-}
+//--SignUP
+const signup = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (user) {
+    throw HttpError(409, "Email in use");
+  }
+
+  const hashPassword = await bcrypt.hash(password, 10);
+
+  const newUser = await User.create({ ...req.body, password: hashPassword });
+
+  res.status(201).json({
+    email: newUser.email,
+    subscription: newUser.subscription,
+  });
+};
+
+//--SignIN
+const signin = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw HttpError(401, "Email or password invalid");
+  }
+
+  const passwordCompare = await bcrypt.compare(password, user.password);
+  if (!passwordCompare) {
+    throw HttpError(401, "Email or password invalid");
+  }
+  const token = "2312.46ts.4512";
+
+  res.json({
+    token,
+  });
+};
 
 export default {
-    singup: ctrlWrapper(singup)
-}
+  signup: ctrlWrapper(signup),
+  signin: ctrlWrapper(signin)
+};
