@@ -53,7 +53,7 @@ const deleteById = async (req, res) => {
   const { id } = req.params;
   const result = await Contact.findByIdAndDelete(id);
   if (!result) {
-    throw HttpError(404, `Movie with id=${id} not found`);
+    throw HttpError(404, `Conact with id=${id} not found`);
   }
   // If for delete contatct we are need status 204: No Content (Standart is status 200)
   //res.status(204).send();

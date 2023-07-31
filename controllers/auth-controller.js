@@ -11,7 +11,7 @@ import { HttpError } from "../helpers/index.js";
 const { JWT_SECRET } = process.env;
 
 //--SignUP
-const signup = async (req, res) => {
+const register = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
@@ -29,7 +29,7 @@ const signup = async (req, res) => {
 };
 
 //--SignIN
-const signin = async (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
@@ -62,18 +62,18 @@ const getCurrent = async (req, res) => {
 };
 
 //--SignOut
-const signout = async (req, res) => {
+const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
 
-  res.json({
-    message: "Signout success",
+  res.status(204).json({
+    message: "Logout success",
   });
 };
 
 export default {
-  signup: ctrlWrapper(signup),
-  signin: ctrlWrapper(signin),
+  register: ctrlWrapper(register),
+  login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
-  signout: ctrlWrapper(signout),
+  logout: ctrlWrapper(logout),
 };
