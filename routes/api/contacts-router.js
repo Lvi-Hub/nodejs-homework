@@ -7,9 +7,10 @@ import contactsSchemas from "../../schemes/contacts-schemas.js";
 import { validateBody } from "../../decorators/index.js";
 
 import {
+  authenticate,
+  upload,
   isEmptyBody,
   isValidId,
-  authenticate,
 } from "../../middlewars/index.js";
 
 const contactsRouter = express.Router();
@@ -24,6 +25,9 @@ contactsRouter.get("/:id", isValidId, contactsController.getById);
 // //--POST conntact
 contactsRouter.post(
   "/",
+  upload.single("poster"),
+  //  upload.array("poster", 8); Якщо ми хочемо завантажити декілька файдів в одному полі
+  //  upload.fields([{name: "poster", maxCount: 1}]) Якщо ми хочемо завандажити кілька файлів у різних полях. maxCount макс кількість полів
   isEmptyBody,
   validateBody(contactsSchemas.contactsAddSchema),
   contactsController.add
