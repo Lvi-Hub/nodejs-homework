@@ -54,4 +54,12 @@ contactsRouter.patch(
 // //--delete (remote contact by ID)
 contactsRouter.delete("/:id", isValidId, contactsController.deleteById);
 
+//
+// contactsRouter.patch(
+//   "/avatars",
+//   authenticate,
+//   upload.single("avatar"),
+//   ctrl.updateAvatar
+// );
+
 export default contactsRouter;
