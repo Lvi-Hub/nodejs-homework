@@ -16,7 +16,7 @@ const userSchema = new Schema({
     type: String,
     match: releaseEmailRegexp,
     unique: true,
-    required: [true, "Email is required"]
+    required: [true, "Email is required"],
   },
   subscription: {
     type: String,
@@ -24,6 +24,9 @@ const userSchema = new Schema({
     default: "starter",
   },
   token: String,
+  avatarURL: {
+    type: String,
+  },
 });
 
 userSchema.pre("findOneAndUpdate", validateAtUpdate);

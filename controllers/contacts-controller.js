@@ -1,13 +1,19 @@
+import fs from "fs/promises";
+import path from "path";
 import Contact from "../models/contact.js";
 import { HttpError } from "../helpers/index.js";
 import { ctrlWrapper } from "../decorators/index.js";
 
+const avatarPath = path.resolve("public", "avatars");
 //--GET All
 const getAll = async (req, res) => {
   const { _id: owner } = req.user;
-  const {page = 1, limit = 10}=req.query;
+  const { page = 1, limit = 10 } = req.query;
   const skip = (page - 1) * limit;
-  const result = await Contact.find({ owner },"-createdAt -updatedAt", {skip, limit}).populate("owner", "name email");
+  const result = await Contact.find({ owner }, "-createdAt -updatedAt", {
+    skip,
+    limit,
+  }).populate("owner", "name email");
   res.json(result);
 };
 
@@ -21,10 +27,14 @@ const getById = async (req, res) => {
   res.json(result);
 };
 
-//--POST conntact
+//--POST contact
 const add = async (req, res) => {
   const { _id: owner } = req.user;
-  const result = await Contact.create({ ...req.body, owner });
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(avatarPath, filename);
+  await fs.rename(oldPath, newPath);
+  const avatarURL = path.join("avatars", filename);
+  const result = await Contact.create({ ...req.body, avatarURL, owner });
   res.status(201).json(result);
 };
 
