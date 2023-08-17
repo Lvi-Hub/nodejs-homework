@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
 
+import { nanoid } from "nanoid";
+
 import fs from "fs/promises";
 
 import jwt from "jsonwebtoken";
@@ -10,7 +12,7 @@ import path from "path";
 
 import { ctrlWrapper } from "../decorators/index.js";
 
-import { HttpError } from "../helpers/index.js";
+import { HttpError, sendEmail, createVerifyEmail } from "../helpers/index.js";
 
 import gravatar from "gravatar";
 
@@ -31,17 +33,64 @@ const register = async (req, res) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
+  const verificationCode = nanoid();
 
   const newUser = await User.create({
     ...req.body,
     avatarURL,
     password: hashPassword,
+    verificationCode,
   });
+
+  const verifyEmail = createVerifyEmail({ email, verificationCode });
+
+  await sendEmail(verifyEmail);
 
   res.status(201).json({
     email: newUser.email,
     subscription: newUser.subscription,
     avatarURL: newUser.avatarURL,
+  });
+};
+
+//--Verify
+const verify = async (req, res) => {
+  const { verificationCode } = req.params;
+  const user = await User.findOne({ verificationCode });
+  if (!user) {
+    throw HttpError(404, "Email not found");
+  }
+  await User.findByIdAndUpdate(user._id, {
+    verify: true,
+    verificationCode: "",
+  });
+
+  res.json({
+    message: "Verify success",
+  });
+};
+
+//Resend Verify Email
+const resendVerifyEmail = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw HttpError(404, "Email not found");
+  }
+
+  if (user.verify) {
+    throw HttpError(400, "Email already verify");
+  }
+
+  const verifyEmail = createVerifyEmail({
+    email,
+    verificationCode: user.verificationCode,
+  });
+
+  await sendEmail(verifyEmail);
+
+  res.json({
+    message: "Resend email success",
   });
 };
 
@@ -51,6 +100,10 @@ const login = async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw HttpError(401, "Email or password invalid");
+  }
+
+  if (!user.verify) {
+    throw HttpError(401, "Email not verify");
   }
 
   const passwordCompare = await bcrypt.compare(password, user.password);
@@ -91,29 +144,30 @@ const logout = async (req, res) => {
 //Update Avatar
 const updateAvatar = async (req, res) => {
   const { _id } = req.user;
-  console.log( _id);
+  console.log(_id);
   console.log(`req: ${req.user}`);
-  
+
   //--
-  if (req.file === undefined ){
+  if (req.file === undefined) {
     throw HttpError(401, `Not authorized`);
   }
   const { path: oldPath, filename } = req.file;
   const newPath = path.join(avatarPath, filename);
   await fs.rename(oldPath, newPath);
   const avatarURL = path.join("avatars", filename);
-  
+
   //--
-  await User.findByIdAndUpdate(_id, { avatarURL : avatarURL });
+  await User.findByIdAndUpdate(_id, { avatarURL: avatarURL });
 
   res.status(200).json({
     message: `avatarURL : ${avatarURL} `,
   });
 };
 
-
 export default {
   register: ctrlWrapper(register),
+  verify: ctrlWrapper(verify),
+  resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
