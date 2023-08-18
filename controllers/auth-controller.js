@@ -60,12 +60,9 @@ const verify = async (req, res) => {
   if (!user) {
     throw HttpError(404, "Email not found");
   }
-  await User.findByIdAndUpdate(user._id, {
-    verify: true,
-    verificationCode: "",
-  });
+  await User.findByIdAndUpdate(user._id, {verify:true, verificationCode:"true",});
 
-  res.json({
+  res.status(200).json({
     message: "Verify success",
   });
 };
@@ -82,10 +79,7 @@ const resendVerifyEmail = async (req, res) => {
     throw HttpError(400, "Email already verify");
   }
 
-  const verifyEmail = createVerifyEmail({
-    email,
-    verificationCode: user.verificationCode,
-  });
+  const verifyEmail = createVerifyEmail({ email, verificationCode: user.verificationCode});
 
   await sendEmail(verifyEmail);
 

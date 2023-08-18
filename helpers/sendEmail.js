@@ -4,19 +4,10 @@ import "dotenv/config";
 
 const { SENDGRID_API_KEY, SENDGRID_EMAIL } = process.env;
 
-/*
-const data = {
-  to: "wimav52416@gienig.com",  
-  subject: "Test emeil",
-  html: "<p><strong>Test emeil</strong> from localhost:3000</p>",
-};
-*/
-
 const sendEmail = (data) => {
   const email = { ...data, from: SENDGRID_EMAIL };
   return sgMail.send(email);
-  // .then(() => console.log("Email send success"))
-  // .catch((error) => console.log(error.message));
+ 
 };
 
 sgMail.setApiKey(SENDGRID_API_KEY);

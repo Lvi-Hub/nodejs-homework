@@ -18,7 +18,7 @@ const userSigninSchema = Joi.object({
 });
 
 const userEmailSchema = Joi.object({
-  email: Joi.string().pattern(releaseEmailRegexp),
+  email: Joi.string().pattern(releaseEmailRegexp).required(),
 });
 
 export default {
